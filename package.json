@@ -1,0 +1,56 @@
+{
+  "name": "s2-star",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "node": "14.x",
+    "npm": "6.x"
+  },
+  "scripts": {
+    "git": "tsc -p . && git add . && git commit -m 'asd' && git push",
+    "start": "cross-env NODE_ENV=production node dist/app.js",
+    "dev": "cross-env NODE_ENV=development nodemon",
+    "build": "tsc",
+    "postbuild": "npm run copy-cert",
+    "copy-cert": "cp src/database/ca-certificate.crt dist/database/ca-certificate.crt",
+    "test": "nodemon src/test.ts",
+    "prebuild": "export NODE_OPTIONS=--max_old_space_size=4096",
+    "lint": "eslint --ignore-path .gitignore --ext .ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "deploy:prod": "npm run build && pm2 start ecosystem.config.js --only prod",
+    "deploy:dev": "pm2 start ecosystem.config.js --only dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/config": "^0.0.41",
+    "@types/express": "^4.17.12",
+    "@types/locutus": "0.0.6",
+    "@types/lodash": "^4.14.170",
+    "@types/mongodb": "^3.6.17",
+    "@types/node": "^15.12.2",
+    "@types/node-cron": "^2.0.3",
+    "nodemon": "^2.0.7",
+    "ts-node": "^10.0.0",
+    "ts-node-dev": "^1.1.8",
+    "tsconfig-paths": "^4.0.0",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "axios": "^0.21.4",
+    "config": "^3.3.7",
+    "cross-env": "^7.0.3",
+    "crypto": "^1.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "locutus": "^2.0.15",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
+    "mongodb": "^3.6.9",
+    "node-config": "^0.0.2",
+    "node-cron": "^3.0.0",
+    "telegraf": "^4.7.0",
+    "tslib": "^2.4.0"
+  }
+}

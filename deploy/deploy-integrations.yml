@@ -1,0 +1,32 @@
+---
+- name: Deploy app using docker
+  hosts: app
+  become: true
+  vars_files:
+    - ["vars/credentials.yml"]
+    - ["vars/configs.yml"]
+  tasks:
+    - name: Log into DockerHub
+      docker_login:
+        username: "{{docker_registry_username}}"
+        password: "{{docker_registry_password}}"
+
+    - name: pull integrations docker image
+      community.docker.docker_image:
+        name: "comtelecom/live-integrations:{{ docker_tag }}"
+        source: pull
+        force_source: yes
+        state: present
+
+    - name: run integrations container
+      docker_container:
+        name: "api-{{ item }}"
+        image: "comtelecom/live-integrations:{{ docker_tag }}"
+        state: started
+        restart_policy: always
+        restart: yes
+        published_ports:
+          - "{{ item }}:3000"
+        env:
+          NODE_ENV: "{{ env }}"
+      with_items: "{{ integrations_ports }}"

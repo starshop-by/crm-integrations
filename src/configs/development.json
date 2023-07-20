@@ -1,0 +1,6 @@
+{
+  "env": "development",
+  "db": {
+    "url": "mongodb://mongo:27017"
+  }
+}

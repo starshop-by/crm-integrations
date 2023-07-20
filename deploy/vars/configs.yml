@@ -1,0 +1,5 @@
+app_home: "/home/{{app_name}}"
+
+integrations_ports: [ 6003 ]
+
+

@@ -1,0 +1,41 @@
+{
+  "env": "production",
+  "db": {
+    "url": "mongodb+srv://legacyadmin:082R46u3MLGot7y5@legacy-db-d8559b0a.mongo.ondigitalocean.com?replicaSet=legacy-db",
+    "tls": true
+  },
+  "youSend": {
+    "token": "5255076124:AAFt_v96pu2pcvJERXC_P4QBZfqEQ-iVwgc",
+    "chatId": "-1001779611487",
+    "apiKey": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjE5YjQ0ZmI0ODRkNTFhODY5OTY2N2NlZmMzNDg4NmZmMmFjNmY4MmMzOWUxMzQ0MmY0ZGNiY2JmYTlhMDRhNzQ5NDA1Mjk4ZTg0NGI5YThkIn0.eyJhdWQiOiIzIiwianRpIjoiMTliNDRmYjQ4NGQ1MWE4Njk5NjY3Y2VmYzM0ODg2ZmYyYWM2ZjgyYzM5ZTEzNDQyZjRkY2JjYmZhOWEwNGE3NDk0MDUyOThlODQ0YjlhOGQiLCJpYXQiOjE2MjYzNTUzNjUsIm5iZiI6MTYyNjM1NTM2NSwiZXhwIjoxNjU3ODkxMzY1LCJzdWIiOiIxNTc4Iiwic2NvcGVzIjpbXX0.ij01MgVVHVr5y7wDzCaSjnV4uA4vGopuL3flRhb4HcEblzBi8xSUVULxzkRSpN6zqPyGinVobycIOPVVPkJ495OtUmwvM2YVwx3P64r_-w2-jfBu_VsvNSRcXiFswJx_uClBIusSNFB8MTKO9pgL1EEpgAZdicnUd8h-7tp_QvxjZyvPpAC1CPOAYw-GlkXaTfJWm4Q2bBw4Lux_1KfRKpuAumb4wf9yma0xMTfyCqxk1sn5Je_TNnQPV-i74yaaxQVc02fhPtDg33PRdfwweCk_tdnJVZMM949l8T-9n7nhDihwXwh96gN9MHxgGPAZzq8KRl_hX4bUZSCR82yrcgBjghH7RDkMZjvdnBjyxOTyfeM9VnPlWuOAwbY7q2I9ig537d3myKH87WON9KoDki5BVdxC4pXrFHqF8Uyihb0qRAbqizwNP4qzfuBgDodtI5-JlA1fSw1Akk_B5auu_bNWr-zwvOFBqWdZdUifEuxXNjJ9bf6iKhe1_Ye4clqpVYlC2Ye5I6tlbVKZ5POZ08UzXPdNwxyIGGRI7TZaxMv03YSkDrl6zLWXZnmBwZZoTqJW6TXNut3Bzck7XVBbBOEWGHLt0njegSi4VVZSWVplYGDSa22BWDgp_VRj1FZQ7k-BnwxMtfWq0jDnkXQXEq9Ev7NWAd3rpj-RIJw-Rdc"
+  },
+  "wapicom": {
+    "chatId": "-618892525",
+    "baseUrl": "https://warehouse-api.azurewebsites.net/api",
+    "clientId": "DEDB282F-C625-4907-9BD4-6637A3787EC4",
+    "hash": "791e2425-291f-4c93-9fa4-317a975d5ec8"
+  },
+  "wapicomPl": {
+    "url": "https://warehouse-api.azurewebsites.net/api",
+    "hash": "2c60e5db-1772-4484-802c-086fa7aafb83",
+    "clientId": "752069BD-50A4-46DF-B511-AA4DE61FF8AF"
+  },
+  "smsp": {
+    "url": "https://cabinet.smsp.by/api",
+    "key": "161v5010ae"
+  },
+  "crm": {
+    "first": {
+      "url": "https://instagram234.retailcrm.ru",
+      "key": "R58Iqw9TDADL3JDvezWbOm6xuKziohxE"
+    },
+    "chb": {
+      "url": "https://s1475963.retailcrm.ru",
+      "key": "R58Iqw9TDADL3JDvezWbOm6xuKziohxE"
+    },
+    "info11": {
+      "url": "https://info11.retailcrm.ru",
+      "key": "integrationLWblH5WB5UlBIsmUlRgkQ9"
+    }
+  }
+}

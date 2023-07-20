@@ -1,0 +1,17 @@
+upstream node-app {
+  server localhost:6000;
+}
+
+server {
+  listen 80;
+  listen 443 ssl;
+  server_name api.legacy.starshopapp.com;
+
+  ssl_certificate /etc/letsencrypt/live/integrations.legacy.starshopapp.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/integrations.legacy.starshopapp.com/privkey.pem;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+
+  location / {
+    proxy_pass http://node-app;
+  }
+}
