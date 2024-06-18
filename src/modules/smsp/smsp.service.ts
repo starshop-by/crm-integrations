@@ -16,16 +16,20 @@ export class SmspService {
   private static user = 'yekommers@bk.ru'
   private static sms_sender = 'STAR-DOSTAV'
 
-  static async sendMessageToViber(tel: string, message: string, orderId: string) {
+  static async sendMessageToViber(body: { tel: string, message: string, orderId: string, company?: string }) {
+    const { tel, message, orderId, company } = body;
+
     try {
       const url = `${this.smsp.url}/send/viber`;
 
       const formattedTel = tel.replace(/\D/g, '');
+      const sender = company === 'ООО АльдиШоп' ? 'ALDISHOP' : this.sender;
+      console.log(sender, body);
 
       const params = new URLSearchParams([
         ['user', this.user],
         ['apikey', this.smsp.key],
-        ['sender', this.sender],
+        ['sender', sender],
         ['msisdn', formattedTel],
         ['text', message],
         ['sms_sender', this.sms_sender],
@@ -50,33 +54,30 @@ export class SmspService {
     }
   }
 
-  static async saveMessagesWithErrorToDatabase(tel: string, message: string, orderId: string, site: string, prevMessagesStatus: string) {
+  static async saveMessagesWithErrorToDatabase(body) {
     try {
       const result = await Client
         .db('viber')
         .collection('delayed')
         .updateOne(
-          { orderId: orderId, },
+          { orderId: body.orderId, },
           {
             $set: {
-              tel: tel,
-              message: message,
-              site: site,
-              prevMessagesStatus: prevMessagesStatus,
+              ...body,
               time: moment().format("YYYY-MM-DD HH:mm:ss"),
             }
           },
           { upsert: true }
         )
 
-      console.log(`Error - delayed message for ${tel} and order ${orderId}`);
+      console.log(`Error - delayed message for ${body.tel} and order ${body.orderId}`);
       return result;
     } catch (e: any) {
       throw new Error(`SmspService > saveMessagesWithErrorToDatabase :: ${e.message}`);
     }
   }
 
-  static async saveMessageToDatabase(tel: string, messageId: number, orderId: string, site: string, prevMessagesStatus: string) {
+  static async saveMessageToDatabase(messageId: number, body) {
     try {
       const result = await Client
         .db('viber')
@@ -85,17 +86,14 @@ export class SmspService {
           { "messageId": messageId.toString() },
           {
             $set: {
-              tel: tel,
-              orderId: orderId,
-              site: site,
-              prevMessagesStatus: prevMessagesStatus,
+              ...body,
               time: moment().format("YYYY-MM-DD HH:mm:ss"),
             }
           },
           { upsert: true }
         );
 
-      console.log(`saved message for ${tel} and order ${orderId}`);
+      console.log(`saved message for ${body.tel} and order ${body.orderId}`);
       return result;
     } catch (e: any) {
       throw new Error(`SmspService > saveMessageToDatabase :: ${e.message}`);
@@ -115,7 +113,7 @@ export class SmspService {
     try {
       for (let item of messages) {
         await sleep(1000);
-        await SmspService.sendMessageToViber(item.tel, item.message, item.orderId);
+        await SmspService.sendMessageToViber(item);
         await Client.db('viber').collection('delayed').findOneAndDelete({ _id: item._id });
         console.log(`sent delayed message to number ${item.tel} for order ${item.orderId}`);
       }

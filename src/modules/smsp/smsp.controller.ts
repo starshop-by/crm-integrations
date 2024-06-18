@@ -2,13 +2,13 @@ import { SmspService } from "./smsp.service"
 
 export default class SmspController {
 
-  static async sendMessageToViber(tel: string, message: string, orderId: string, site: string, prevMessagesStatus: string) {
+  static async sendMessageToViber(body: { tel: string, message: string, orderId: string, site: string, prevMessagesStatus: string, company?: string }) {
     try {
-      const response = await SmspService.sendMessageToViber(tel, message, orderId);
+      const response = await SmspService.sendMessageToViber(body);
       
       if (response.status === false) {
         if (response?.error?.code === 7) {
-          const dbResponse = await SmspService.saveMessagesWithErrorToDatabase(tel, message, orderId, site, prevMessagesStatus);
+          const dbResponse = await SmspService.saveMessagesWithErrorToDatabase(body);
           return dbResponse;
         } else {
           throw new Error(`${response.error.description}`);
@@ -17,11 +17,11 @@ export default class SmspController {
 
       const message_id = response.message_id;
 
-      const dbResponse = await SmspService.saveMessageToDatabase(tel, message_id, orderId, site, prevMessagesStatus);
+      const dbResponse = await SmspService.saveMessageToDatabase(message_id, body);
 
       return dbResponse;
     } catch (e: any) {
-      console.error(`ERROR SmspController > sendMessageToViber :: ${e.message} for tel ${tel} and order ${orderId}`)
+      console.error(`ERROR SmspController > sendMessageToViber :: ${e.message} for tel ${body.tel} and order ${body.orderId}`)
     }
   }
 
