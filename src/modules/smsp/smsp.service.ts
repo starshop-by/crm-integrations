@@ -23,13 +23,12 @@ export class SmspService {
       const url = `${this.smsp.url}/send/viber`;
 
       const formattedTel = tel.replace(/\D/g, '');
-      const sender = company === 'ООО АльдиШоп' ? 'ALDISHOP' : this.sender;
-      console.log(sender, body);
+      // const sender = company === 'ООО АльдиШоп' ? 'ALDISHOP' : this.sender;
 
       const params = new URLSearchParams([
         ['user', this.user],
         ['apikey', this.smsp.key],
-        ['sender', sender],
+        ['sender', this.sender],
         ['msisdn', formattedTel],
         ['text', message],
         ['sms_sender', this.sms_sender],
