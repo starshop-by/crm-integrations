@@ -42,8 +42,10 @@ export class SmspService {
         ['sender', senderObj.sender],
         ['msisdn', formattedTel],
         ['text', message],
-        ['sms_sender', senderObj.sms_sender],
-        ['sms_text', message],
+        ...(senderObj.sender === DEFAULT_SENDER.sender ? [
+          ['sms_sender', senderObj.sms_sender],
+          ['sms_text', message],
+        ] : []),
       ]);
 
       const config = {
