@@ -9,12 +9,23 @@ import {Api} from "../../api/api";
 import config from "config";
 import {ServiceConfig} from "../../interfaces/config.interface";
 
+const DEFAULT_SENDER = {
+  apikey: '161v5010ae',
+  user: 'yekommers@bk.ru',
+  sms_sender: 'STAR-DOSTAV',
+  sender: 'DOSTAVKASTAR',
+}
+
+const ALDI_SENDER = {
+  apikey: 'IHAcyLkNpQ3NavW7LoGW',
+  user: 'aldishopinfo@gmail.com',
+  sms_sender: 'ALDISHOP',
+  sender: 'ALDISHOP',
+}
+
 export class SmspService {
 
   private static smsp: ServiceConfig = config.get('smsp');
-  private static sender = 'DOSTAVKASTAR'
-  private static user = 'yekommers@bk.ru'
-  private static sms_sender = 'STAR-DOSTAV'
 
   static async sendMessageToViber(body: { tel: string, message: string, orderId: string, company?: string }) {
     const { tel, message, orderId, company } = body;
@@ -23,15 +34,15 @@ export class SmspService {
       const url = `${this.smsp.url}/send/viber`;
 
       const formattedTel = tel.replace(/\D/g, '');
-      // const sender = company === 'ООО АльдиШоп' ? 'ALDISHOP' : this.sender;
+      const senderObj = company === 'ООО АльдиШоп' ? ALDI_SENDER : DEFAULT_SENDER;
 
       const params = new URLSearchParams([
-        ['user', this.user],
-        ['apikey', this.smsp.key],
-        ['sender', this.sender],
+        ['user', senderObj.user],
+        ['apikey', senderObj.apikey],
+        ['sender', senderObj.sender],
         ['msisdn', formattedTel],
         ['text', message],
-        ['sms_sender', this.sms_sender],
+        ['sms_sender', senderObj.sms_sender],
         ['sms_text', message],
       ]);
 
@@ -43,11 +54,17 @@ export class SmspService {
 
       const response = await axios.post(url, params, config).then((response) => response.data);
       if (response?.status === false) {
-        return response;
+        return {
+          ...response,
+          sender: senderObj.sender,
+        };
       }
 
       console.log(`sent message to tel ${tel} and order ${orderId}`);
-      return response;
+      return {
+        ...response,
+        sender: senderObj.sender,
+      };
     } catch (e: any) {
       console.error(`ERROR SmspService > sendMessageToViber :: ${e.message}`);
     }
@@ -132,35 +149,42 @@ export class SmspService {
 
   static async getAllMessagesStatusFromSmsp(messageItems: Array<any>) {
     try {
-      const messageIds = messageItems.map(item => item.messageId);
-      const chunks = _.chunk(messageIds, 490);
+      const [defaultStatuses, aldiStatuses] = await Promise.all([DEFAULT_SENDER.sender, ALDI_SENDER.sender].map(async (sender) => {
+        const messageIds = messageItems
+          .filter(item => (item.sender || DEFAULT_SENDER.sender) === sender)
+          .map(item => item.messageId);
+        const chunks = _.chunk(messageIds, 490);
 
-      const messageStatuses = await chunks.reduce(async (total: any, chunk: any) => {
-        const currentTotal = await total;
-        await sleep(1000);
+        const messageStatuses = await chunks.reduce(async (total: any, chunk: any) => {
+          const currentTotal = await total;
+          await sleep(1000);
 
-        const messageIdsString = chunk.toString();
-        const currentChunkStatuses = await SmspService.getOneChunkOfMessageStatusesFromSmsp(messageIdsString);
-        console.log('recieved message statuses chunk');
+          const messageIdsString = chunk.toString();
+          const currentChunkStatuses = await SmspService.getOneChunkOfMessageStatusesFromSmsp(messageIdsString, sender);
+          console.log('recieved message statuses chunk');
 
-        currentTotal.push(...currentChunkStatuses);
-        return currentTotal;
-      }, [] as any);
+          currentTotal.push(...currentChunkStatuses);
+          return currentTotal;
+        }, [] as any);
+      
+        return messageStatuses;
+      }));
 
       console.log(`recieved all messageStatuses`);
-      return messageStatuses;
+      return [...defaultStatuses, ...aldiStatuses];
     } catch (e: any) {
       throw new Error(`SmspService > getAllMessagesStatusFromSmsp :: ${e.message}`);
     }
   }
 
-  static async getOneChunkOfMessageStatusesFromSmsp(messageIdsString: string) {
+  static async getOneChunkOfMessageStatusesFromSmsp(messageIdsString: string, sender: string) {
     try {
       const url = `${this.smsp.url}/statusBulk/viber`;
+      const senderObj = sender === DEFAULT_SENDER.sender ? DEFAULT_SENDER : ALDI_SENDER;
 
       const params = new URLSearchParams([
-        ['user', this.user],
-        ['apikey', this.smsp.key],
+        ['user', senderObj.user],
+        ['apikey', senderObj.apikey],
         ['message_ids', messageIdsString]
       ]);
 

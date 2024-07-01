@@ -21,8 +21,7 @@
     "clientId": "752069BD-50A4-46DF-B511-AA4DE61FF8AF"
   },
   "smsp": {
-    "url": "https://cabinet.smsp.by/api",
-    "key": "161v5010ae"
+    "url": "https://cabinet.smsp.by/api"
   },
   "crm": {
     "first": {

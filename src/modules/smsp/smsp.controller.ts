@@ -16,8 +16,9 @@ export default class SmspController {
       }
 
       const message_id = response.message_id;
+      const sender = response.sender;
 
-      const dbResponse = await SmspService.saveMessageToDatabase(message_id, body);
+      const dbResponse = await SmspService.saveMessageToDatabase(message_id, { ...body, sender });
 
       return dbResponse;
     } catch (e: any) {
