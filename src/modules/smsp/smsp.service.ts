@@ -27,8 +27,8 @@ export class SmspService {
 
   private static smsp: ServiceConfig = config.get('smsp');
 
-  static async sendMessageToViber(body: { tel: string, message: string, orderId: string, company?: string }) {
-    const { tel, message, orderId, company } = body;
+  static async sendMessageToViber(body: { tel: string, message: string, id: string, company?: string }) {
+    const { tel, message, id, company } = body;
 
     try {
       const url = `${this.smsp.url}/send/viber`;
@@ -52,6 +52,7 @@ export class SmspService {
         }
       }
 
+      console.log('sender', senderObj.sender);
       const response = await axios.post(url, params, config).then((response) => response.data);
       if (response?.status === false) {
         return {
@@ -60,7 +61,7 @@ export class SmspService {
         };
       }
 
-      console.log(`sent message to tel ${tel} and order ${orderId}`);
+      console.log(`sent message to tel ${tel} and order ${id}`);
       return {
         ...response,
         sender: senderObj.sender,
@@ -76,7 +77,7 @@ export class SmspService {
         .db('viber')
         .collection('delayed')
         .updateOne(
-          { orderId: body.orderId, },
+          { orderId: body.id, },
           {
             $set: {
               ...body,
@@ -86,7 +87,7 @@ export class SmspService {
           { upsert: true }
         )
 
-      console.log(`Error - delayed message for ${body.tel} and order ${body.orderId}`);
+      console.log(`Error - delayed message for ${body.tel} and order ${body.id}`);
       return result;
     } catch (e: any) {
       throw new Error(`SmspService > saveMessagesWithErrorToDatabase :: ${e.message}`);
@@ -109,7 +110,7 @@ export class SmspService {
           { upsert: true }
         );
 
-      console.log(`saved message for ${body.tel} and order ${body.orderId}`);
+      console.log(`saved message for ${body.tel} and order ${body.id}`);
       return result;
     } catch (e: any) {
       throw new Error(`SmspService > saveMessageToDatabase :: ${e.message}`);
@@ -131,7 +132,7 @@ export class SmspService {
         await sleep(1000);
         await SmspService.sendMessageToViber(item);
         await Client.db('viber').collection('delayed').findOneAndDelete({ _id: item._id });
-        console.log(`sent delayed message to number ${item.tel} for order ${item.orderId}`);
+        console.log(`sent delayed message to number ${item.tel} for order ${item.id}`);
       }
     } catch (e: any) {
       throw new Error(`SmspService > sendAllDelayedMessagesToViber :: ${e.message}`);
@@ -216,6 +217,11 @@ export class SmspService {
         7, // Просрочено
       ];
 
+      if (!orderId) {
+        console.log('no order id');
+        return;
+      }
+
       if (completedStatuses.includes(statusCode)) {
         const url = `${Api.firstCrm.url}/api/v5/orders/${orderId}/edit?&apiKey=${Api.firstCrm.key}`;
 
@@ -280,7 +286,7 @@ export class SmspService {
         await sleep(100);
         const { message_id, code, name } = messageStatus;
         const messageInDb = await Client.db('viber').collection('messages').findOne({ messageId: message_id.toString() });
-        const { orderId, tel, prevMessagesStatus, site, time } = messageInDb;
+        const { id: orderId, tel, prevMessagesStatus, site, time } = messageInDb;
 
         await SmspService.updateOneOrderWithMessageStatus(tel, message_id, code, name, orderId, prevMessagesStatus, site, time);
         return;

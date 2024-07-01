@@ -2,7 +2,7 @@ import { SmspService } from "./smsp.service"
 
 export default class SmspController {
 
-  static async sendMessageToViber(body: { tel: string, message: string, orderId: string, site: string, prevMessagesStatus: string, company?: string }) {
+  static async sendMessageToViber(body: { tel: string, message: string, id: string, site: string, prevMessagesStatus: string, company?: string }) {
     try {
       const response = await SmspService.sendMessageToViber(body);
       
@@ -22,7 +22,7 @@ export default class SmspController {
 
       return dbResponse;
     } catch (e: any) {
-      console.error(`ERROR SmspController > sendMessageToViber :: ${e.message} for tel ${body.tel} and order ${body.orderId}`)
+      console.error(`ERROR SmspController > sendMessageToViber :: ${e.message} for tel ${body.tel} and order ${body.id}`)
     }
   }
 
