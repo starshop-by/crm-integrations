@@ -36,17 +36,23 @@ export class SmspService {
       const formattedTel = tel.replace(/\D/g, '');
       const senderObj = company === 'ООО АльдиШоп' ? ALDI_SENDER : DEFAULT_SENDER;
 
-      const params = new URLSearchParams([
-        ['user', senderObj.user],
-        ['apikey', senderObj.apikey],
-        ['sender', senderObj.sender],
-        ['msisdn', formattedTel],
-        ['text', message],
-        ...(senderObj.sender === DEFAULT_SENDER.sender ? [
+      const params = new URLSearchParams(
+        senderObj.sender === DEFAULT_SENDER.sender
+        ? [
+          ['user', senderObj.user],
+          ['apikey', senderObj.apikey],
+          ['sender', senderObj.sender],
+          ['msisdn', formattedTel],
+          ['text', message],
           ['sms_sender', senderObj.sms_sender],
           ['sms_text', message],
-        ] : []),
-      ]);
+        ] : [
+          ['user', senderObj.user],
+          ['apikey', senderObj.apikey],
+          ['sender', senderObj.sender],
+          ['msisdn', formattedTel],
+          ['text', message],
+        ]);
 
       const config = {
         headers: {
